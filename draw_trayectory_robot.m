@@ -5,7 +5,9 @@ hold on
 view(200,25)
 grid on
 axis equal
-
+xlabel('x')
+ylabel('y')
+zlabel('z')
 
 draw_robot(q1,L,'-b')
 draw_robot(q2,L,'-g')

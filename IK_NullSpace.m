@@ -1,4 +1,4 @@
-function q = IK_NullSpace(Td, q0, L0)
+function q = IK_NullSpace(pd, q0, L0)
     
     eps_p = 1e-06; % min error in position
     eps_o = 1e-05; % min error in orientation
@@ -15,12 +15,11 @@ function q = IK_NullSpace(Td, q0, L0)
         q(1)=q(1)+0.01;
     end
     
-    pd = Td(1:3, 4);            %position we want go
+    %pd = Td(1:3, 4);            %position we want go
     
     T=FK(q,L0);%double(subs(FowardK, [q_symbs], [q'] ));
     p = T(1:3, 4);
     e_p = pd - p;   %current position error
-    
     
     
     % Complete the initialization and cycle responsible for implementing the iterative method
@@ -41,15 +40,15 @@ function q = IK_NullSpace(Td, q0, L0)
         if (k>1)
             q_next = q;
         end
-        d_q0=[0 0 0 0 0 0 0];
-        for i=1:7
-            onlinjoinq=[0 0 0 0 0 0 0];
+        d_q0=[0 0 0 0 0 0];
+        for i=1:6
+            onlinjoinq=[0 0 0 0 0 0];
             onlinjoinq(i)=q_last(i);
             
             J_last=Jacobian(onlinjoinq,L0);
             H_last=real(sqrt(det(J_last*(J_last'))));
             
-            onlinjoinq=[0 0 0 0 0 0 0];
+            onlinjoinq=[0 0 0 0 0 0];
             onlinjoinq(i)=q_next(i);
             J_next=Jacobian(onlinjoinq,L0);
             H_next=real(sqrt(det(J_next*(J_next'))));
@@ -63,14 +62,14 @@ function q = IK_NullSpace(Td, q0, L0)
         d_q0=d_q0';
         delta_r=e; 
         
-        delta_q= pinv(J)*delta_r + (eye(7)-pinv(J)*J)*d_q0; % The solution is updated
+        delta_q= pinv(J)*delta_r + (eye(6)-pinv(J)*J)*d_q0; % The solution is updated
             
         q = q + delta_q;
         
         k = k + 1; % the iteration number is uodated
     end
     i=1;
-    while (i<7) % angles  #
+    while (i<6) % angles  #
         q(i)=wrapToPi(q(i));
         i=i+1;
     end
